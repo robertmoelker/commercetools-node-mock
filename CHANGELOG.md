@@ -1,5 +1,18 @@
 # CHANGELOG
 
+## 4.4.0
+
+### Minor Changes
+
+- [#409](https://github.com/labd/commercetools-node-mock/pull/409) [`2a84115`](https://github.com/labd/commercetools-node-mock/commit/2a84115d8475de35164d52cde5edb66c68122367) Thanks [@korsvanloon](https://github.com/korsvanloon)! - Support the `changeQuoteRequestState` update action on quote requests.
+
+  The quote-request update handler implemented `setCustomField`, `setCustomType`
+  and `transitionState`, but not `changeQuoteRequestState` — so a buyer
+  cancelling a quote request, which maps to that action, could not be exercised
+  against the mock. `transitionState` is not a substitute: it moves a quote
+  request through a custom State machine, while `changeQuoteRequestState` sets
+  the built-in `quoteRequestState` enum.
+
 ## 4.3.1
 
 ### Patch Changes
