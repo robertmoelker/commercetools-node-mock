@@ -1,5 +1,42 @@
 # CHANGELOG
 
+## 5.0.0-beta.1
+
+### Minor Changes
+
+- [#430](https://github.com/labd/commercetools-node-mock/pull/430) [`2e8ae39`](https://github.com/labd/commercetools-node-mock/commit/2e8ae39d3090c677bde0252bb4b4438aca0d2e72) Thanks [@mvantellingen](https://github.com/mvantellingen)! - Persist `expansionPaths`, `dependencies` and `additionalContext` when creating
+  an API Extension.
+  
+  The Extension repository only copied `key`, `timeoutInMs`, `destination` and
+  `triggers` out of the draft, so the three fields added by the 2026-03-12 API
+  release were silently dropped on create. `POST /{projectKey}/extensions` with
+  `expansionPaths` returned an extension without them, which made it look like
+  the field was rejected. The `setExpansionPaths`, `setDependencies` and
+  `setAdditionalContext` update actions were already implemented, so only the
+  create path was affected.
+  
+  `dependencies` are now resolved through the storage layer like every other
+  resource identifier, so they can be given by `key` as well as by `id` (on both
+  create and `setDependencies`, which previously assumed `id` was set) and an
+  unknown dependency returns a `ReferencedResourceNotFound` error instead of a
+  reference with `id: undefined`.
+
+### Patch Changes
+
+- [#433](https://github.com/labd/commercetools-node-mock/pull/433) [`74adf7c`](https://github.com/labd/commercetools-node-mock/commit/74adf7c49052ffea5807b5aa671303d1ad419663) Thanks [@robertmoelker](https://github.com/robertmoelker)! - Update astro (docs) to v7.* for security reasons
+
+- [#432](https://github.com/labd/commercetools-node-mock/pull/432) [`756eb56`](https://github.com/labd/commercetools-node-mock/commit/756eb56ee0181719c55537e90cf84d9db25087ea) Thanks [@robertmoelker](https://github.com/robertmoelker)! - Enforce BusinessUnit key uniqueness within a project. Creating a business unit with a key that is already taken now returns a 400 `DuplicateField` error on the `key` field instead of silently storing a second unit under the same key.
+
+- [#432](https://github.com/labd/commercetools-node-mock/pull/432) [`756eb56`](https://github.com/labd/commercetools-node-mock/commit/756eb56ee0181719c55537e90cf84d9db25087ea) Thanks [@robertmoelker](https://github.com/robertmoelker)! - `clear()` now also resets the auth store. Tokens issued before a `clear()` used to stay valid and keep resolving to customers and anonymous sessions that no longer existed, leaking identity between tests. Tests that issue a token (for example through `customerSession`) must do so after each `clear()`.
+
+- [#434](https://github.com/labd/commercetools-node-mock/pull/434) [`cb56f14`](https://github.com/labd/commercetools-node-mock/commit/cb56f14e0686e6d7dba0e7c1ec0d889506387283) Thanks [@robertmoelker](https://github.com/robertmoelker)! - Scope customer email uniqueness to the stores a customer is assigned to. The same email can now be used in different stores, matching commercetools behaviour. Customers created through an in-store endpoint are assigned to that store, and the in-store password flow only matches customers of that store.
+  
+  Implement the `addStore`, `removeStore` and `setStores` customer update actions, which re-validate email uniqueness for any store scope the customer newly enters (including becoming a global customer again).
+  
+  Store resource identifiers are now validated by `key` as well as by `id`, so referencing a non-existent store in a draft returns a 400 `ReferencedResourceNotFound` error instead of silently passing through. This also fixes `getStoreKeyReference`, which previously always failed for `id`-based references.
+  
+  In-store endpoints (`/{projectKey}/in-store/key={storeKey}/...`) now return a 404 `ResourceNotFound` when the store in the path does not exist, matching commercetools.
+
 ## 5.0.0-beta.0
 
 ### Major Changes
